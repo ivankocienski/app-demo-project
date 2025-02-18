@@ -2,6 +2,17 @@
 
 Objective: Produce a demonstration API capable of delivering a experience typical of some kind of REST service. This can then be used to build and embed the server application in a Docker container, and then built in to a Docker swarm cluster.
 
+## Requirements, building and running
+
+Requires go (go1.23.5). Clone repo and `go install`
+
+This has 2 environment variables:
+
+- `APP_LISTEN_ON` sets where the server runs from, defaults to `0.0.0.0:8002`
+- `APP_PGCONFIG` **must** be set and looks like `api_demo_role:password@localhost:5432/api_demo_db`
+
+Then run either with `go run .` or `go build . && ./api-demo`.
+
 # Specs
 
 The basic scenario is: a "partner" is defined with the following:
@@ -46,14 +57,6 @@ Also:
 Hypothetical continuation:
 - build front-end
 
+# Up next
 
-## Running and configuration
-
-This has 2 environment variables:
-
-- `APP_LISTEN_ON` sets where the server runs from, defaults to `0.0.0.0:8002`
-- `APP_PGCONFIG` **must** be set and looks like `api_demo_role:password@localhost:5432/api_demo_db`
-
-Then run either with `go run .` or `go build . && ./api-demo`.
-
-
+Dockerising.
