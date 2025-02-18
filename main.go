@@ -187,8 +187,7 @@ func main() {
 
   pgConnection, err = pgx.Connect(context.Background(), pgConfig)
 	if err != nil {
-		log.Fatal("Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		log.Fatal("Unable to connect to database:", err)
 	}
 
 	defer pgConnection.Close(context.Background())
@@ -206,5 +205,8 @@ func main() {
   }
 
 	log.Printf("Starting on http://%v", listenOn)
-	http.ListenAndServe(listenOn, r)
+	err = http.ListenAndServe(listenOn, r)
+  if err != nil {
+    log.Fatal("Fatal: failed to open server:", err)
+  }
 }

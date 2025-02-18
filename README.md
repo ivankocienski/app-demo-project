@@ -13,6 +13,18 @@ This has 2 environment variables:
 
 Then run either with `go run .` or `go build . && ./api-demo`.
 
+## Docker
+
+This application can also be built in to a container
+```bash
+docker build -t go-api-demo . # compiles and builds container
+
+docker run -it --rm --name my-running-app -p "8002:8002" go-api-demo # will run the container
+```
+
+Note: this Dockerfile is only for local development.
+
+
 # Specs
 
 The basic scenario is: a "partner" is defined with the following:
