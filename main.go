@@ -13,9 +13,16 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const pgConfig = "postgresql://api_demo_role:password@localhost:5432/api_demo_db"
+//
+// globals (ugh)
+//
 
+var pgConfig string
 var pgConnection *pgx.Conn
+
+//
+// types
+//
 
 type StatusPayloadType struct {
 	Status       string
@@ -45,6 +52,10 @@ type PartnerShortType struct {
 type PartnerIndexPayload struct {
 	Partners []PartnerShortType `json:"partners"`
 }
+
+//
+// handlers
+//
 
 func handleStatus(w http.ResponseWriter, _ *http.Request) {
 	var err error
@@ -156,11 +167,25 @@ func handlePartnerShow(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//
+// main
+//
+
 func main() {
-	var err error
+  var err error
+  var present bool
 
 	// DB
-	pgConnection, err = pgx.Connect(context.Background(), pgConfig)
+
+  pgConfig, present = os.LookupEnv("APP_PGCONFIG")
+  if !present {
+    log.Fatal("Fatal: APP_PGCONFIG is not set in environment, stopping")
+  }
+  // MAYBE validate it looks like a PG URL? or not? How much do i trust pgx?
+
+  pgConfig = "postgresql://" + pgConfig
+
+  pgConnection, err = pgx.Connect(context.Background(), pgConfig)
 	if err != nil {
 		log.Fatal("Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -175,6 +200,11 @@ func main() {
 	r.HandleFunc("/api/v1/partners", handlePartnersIndex).Methods("GET")
 	r.HandleFunc("/api/v1/partners/{id}", handlePartnerShow).Methods("GET")
 
-	log.Println("Starting on http://localhost:8002")
-	http.ListenAndServe(":8002", r)
+  listenOn, present := os.LookupEnv("APP_LISTEN_ON")
+  if !present || len(listenOn) == 0 {
+    listenOn = "0.0.0.0:8002"
+  }
+
+	log.Printf("Starting on http://%v", listenOn)
+	http.ListenAndServe(listenOn, r)
 }

@@ -46,3 +46,14 @@ Also:
 Hypothetical continuation:
 - build front-end
 
+
+## Running and configuration
+
+This has 2 environment variables:
+
+- `APP_LISTEN_ON` sets where the server runs from, defaults to `0.0.0.0:8002`
+- `APP_PGCONFIG` **must** be set and looks like `api_demo_role:password@localhost:5432/api_demo_db`
+
+Then run either with `go run .` or `go build . && ./api-demo`.
+
+
