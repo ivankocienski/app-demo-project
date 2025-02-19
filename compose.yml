@@ -1,0 +1,41 @@
+name: go-api-demo
+services:
+  app:
+    build: .
+    environment:
+      APP_PGCONFIG: "api_demo_role:password@172.17.0.1:5432/api_demo_db"
+    expose:
+      - 8002
+    ports:
+      - "8002:8002"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+
+  db:
+    image: postgres:17
+    #build:
+    #  copy: ./db/init.d/*.sql /docker-entrypoint-initdb.d/
+    user: "1000:1000"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: 172.17.0.1
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+      - ./db/init.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+#volumes:
+#  db_data:
+    

@@ -71,4 +71,6 @@ Hypothetical continuation:
 
 # Up next
 
-Dockerising.
+Putting together a docker compose config so the app and the database can be built in one go.
+
+Think about a SPA front end.

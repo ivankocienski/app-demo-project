@@ -1,3 +1,7 @@
+\c api_demo_db
+
+SET ROLE api_demo_role;
+
   INSERT INTO partners 
     (name, summary, description, created_at, contact_email)
     VALUES

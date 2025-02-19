@@ -175,6 +175,8 @@ func main() {
   var err error
   var present bool
 
+  log.Println("go-api-demo starting up")
+
 	// DB
 
   pgConfig, present = os.LookupEnv("APP_PGCONFIG")
@@ -184,6 +186,7 @@ func main() {
   // MAYBE validate it looks like a PG URL? or not? How much do i trust pgx?
 
   pgConfig = "postgresql://" + pgConfig
+  log.Println("pgConfig=", pgConfig)
 
   pgConnection, err = pgx.Connect(context.Background(), pgConfig)
 	if err != nil {
