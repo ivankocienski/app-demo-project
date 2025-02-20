@@ -13,17 +13,18 @@ This has 2 environment variables:
 
 Then run either with `go run .` or `go build . && ./api-demo`.
 
-## Docker
+## Makefile
 
-This application can also be built in to a container
-```bash
-docker build -t go-api-demo . # compiles and builds container
+There is a makefile that wraps various common commands:
+- `make` will build the binary `api-demo` on the host computer using the host go environment
+- `make run` will run the local `api-demo` binary with some predefined config
+- `make docker_build` will build the single api-demo compiled container. No need for local go
+- `make docker_run` will run the container from the previous command
+- `make compose` will build both the application container and the database container from scratch, no need for either postgres or go.
 
-docker run -it --rm --name my-running-app -p "8002:8002" go-api-demo # will run the container
-```
-
-Note: this Dockerfile is only for local development.
-
+These commands rely on the following environment files
+- `env-local.sh` for running the api-demo in a single container
+- `env-compose.sh` for setting up the docker swarm
 
 # Specs
 

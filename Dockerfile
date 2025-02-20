@@ -2,7 +2,8 @@
 
 FROM golang:1.23.5
 
-# ENV APP_PGCONFIG=api_demo_role:password@192.168.1.133:5432/api_demo_db
+# this is pulled from the environment
+ARG APP_PGCONFIG
 
 EXPOSE 8002
 
