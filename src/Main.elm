@@ -3,20 +3,16 @@ module Main exposing (main)
 import Browser
 import Url
 import Browser.Navigation as Nav
-import Html exposing (Html, text, div)
+import Html exposing (Html, text, div, h1, h2, ul, li)
 
-type Msg
-  = LinkClicked Browser.UrlRequest
-  | UrlChanged Url.Url
-
-type alias Model = 
-  { navKey : Nav.Key
-  }
+import Common exposing (Model, Msg(..), PartnerIndex)
+import Api
 
 init : flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-  ( Model navKey
-  , Cmd.none)
+  ( Model navKey (PartnerIndex [] 0)
+  --, Cmd.none)
+  , Api.readPostsIndex)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -34,15 +30,32 @@ update msg model =
       ( model 
       , Cmd.none)
 
+    GotPartnersForIndex result ->
+      case result of
+        Ok partnerData ->
+          ( { model | partnerData = partnerData }
+          , Cmd.none
+          )
+        Err _ ->
+          ( model
+          , Cmd.none
+          )
+
+
 view : Model -> Browser.Document Msg
 view model =
-  { title = "Hello"
-  , body =
-    [ div []
-      [ text "Hello" 
+  let
+      partnerRenderer partner =
+        li [] [ text partner.name ]
+
+  in
+    { title = "Hello"
+    , body =
+      [ h1 [] [ text "Partners" ]
+      , h2 [] [ text ("Found " ++ String.fromInt( model.partnerData.count )) ]
+      , ul [] (List.map partnerRenderer model.partnerData.partners)
       ]
-    ]
-  }
+    }
 
 main : Program () Model Msg
 main =
