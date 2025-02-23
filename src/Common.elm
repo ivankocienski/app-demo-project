@@ -1,10 +1,14 @@
-module Common exposing (Msg(..), Model, PartnerSummary, PartnerIndex)
+module Common exposing (Msg(..), Model, PartnerSummary, PartnerIndex, Page(..))
 
 import Browser
 import Url
 import Browser.Navigation as Nav
 import Http
 import Time
+
+type Page
+  = Root
+  | NotFound
 
 type Msg
   = LinkClicked Browser.UrlRequest
@@ -13,6 +17,7 @@ type Msg
 
 type alias Model = 
   { navKey : Nav.Key
+  , page: Page
   , partnerData: PartnerIndex
   }
 
