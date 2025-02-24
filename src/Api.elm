@@ -1,18 +1,37 @@
-module Api exposing (readPostsIndex)
+module Api exposing (readPostsIndex, readPost, httpErrorDescription)
 
 import Http
 import Json.Decode as JD
-import Common exposing (Msg(..), PartnerSummary, PartnerIndex)
+import Common exposing (Msg(..), PartnerSummary, PartnerIndex, PartnerFull)
 
 endPoint: String
 endPoint = "http://localhost:8002/api/v1"
 
 readPostsIndex: Cmd Msg
 readPostsIndex =
-  Http.get 
+  Http.get
   { url = (endPoint ++ "/partners")
   , expect = Http.expectJson GotPartnersForIndex partnerIndexDecoder
   }
+
+readPost: Int -> Cmd Msg
+readPost id =
+  Http.get
+  { url = (endPoint ++ "/partners/" ++ String.fromInt(id))
+  , expect = Http.expectJson GotPartnerForShow partnerDecoder
+  }
+
+partnerDecoder: JD.Decoder PartnerFull
+partnerDecoder =
+  JD.map6 PartnerFull
+    (JD.field "id" JD.int)
+    (JD.field "name" JD.string)
+    (JD.field "summary" JD.string)
+    (JD.field "description" JD.string)
+    (JD.field "created_at" JD.string) --JD.Extra.datetime)
+    (JD.field "contact_email" JD.string)
+
+
 
 partnerSummaryDecoder: JD.Decoder PartnerSummary
 partnerSummaryDecoder =
@@ -28,3 +47,21 @@ partnerIndexDecoder =
     (JD.field "partners" (JD.list partnerSummaryDecoder))
     (JD.field "partner_count" JD.int)
 
+
+httpErrorDescription : Http.Error -> String
+httpErrorDescription error =
+  case error of
+    Http.BadUrl problem ->
+      "Bad URL: " ++ problem
+
+    Http.Timeout ->
+      "Timeout"
+
+    Http.NetworkError ->
+      "Network error"
+
+    Http.BadStatus code ->
+      "Bad status (" ++ (String.fromInt code) ++ ")"
+
+    Http.BadBody problem ->
+      "Bad body: " ++ problem

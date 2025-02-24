@@ -7,7 +7,7 @@ import Html exposing (Html, text, div, h1, h2, ul, li, a, p)
 import Html.Attributes exposing (href)
 import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 
-import Common exposing (Model, Msg(..), PartnerIndex, Page(..))
+import Common exposing (Model, Msg(..), PartnerIndex, Page(..), PartnerShow(..))
 import Api
 
 
@@ -15,12 +15,12 @@ navModeParser : Parser (Page -> a) a
 navModeParser =
     oneOf
         [ Parser.map Root Parser.top
-        --, Parser.map ShowPost (Parser.s "blog" </> Parser.string)
+        , Parser.map ShowPartner (Parser.s "partners" </> Parser.int)
         --, Parser.map NotFound (Parser.s "*")
         ]
 
 navParseUrlToMode : Url.Url -> Page
-navParseUrlToMode url = 
+navParseUrlToMode url =
   Maybe.withDefault NotFound (Parser.parse navModeParser <| url)
 
 {----
@@ -29,11 +29,22 @@ Elm core bits
 
 ----}
 
+actionForPage : Page -> Cmd Msg
+actionForPage page =
+  case page of
+    Root -> Api.readPostsIndex
+    ShowPartner id -> Api.readPost id
+    _ -> Cmd.none
+
+
 init : flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-  ( Model navKey (navParseUrlToMode url) (PartnerIndex [] 0)
-  --, Cmd.none)
-  , Api.readPostsIndex)
+  let
+      page = navParseUrlToMode url
+
+  in
+    ( Model navKey page (PartnerIndex [] 0) Empty
+    , actionForPage page)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -48,8 +59,14 @@ update msg model =
           (model, Nav.load href)
 
     UrlChanged url ->
-      ( { model | page = navParseUrlToMode url }
-      , Cmd.none)
+      let
+          page = navParseUrlToMode url
+
+      in
+        ( { model | page = navParseUrlToMode url }
+        , actionForPage page)
+      --( { model | page = navParseUrlToMode url }
+      --, Cmd.none)
 
     GotPartnersForIndex result ->
       case result of
@@ -62,11 +79,23 @@ update msg model =
           , Cmd.none
           )
 
+    GotPartnerForShow result ->
+      case result of
+        Ok showPartnerData ->
+          ( { model | showPartner = Loaded showPartnerData }
+          , Cmd.none
+          )
+        Err error ->
+          ( { model | showPartner = Problem (Api.httpErrorDescription error) }
+          , Cmd.none
+          )
+
 titleForPage : Model -> String
 titleForPage model =
   (case model.page of
     Root -> "Home"
     NotFound -> "Not Found"
+    ShowPartner id -> "Show partner (" ++ String.fromInt(id) ++ ")"
   ) ++ " - API Demo"
 
 viewForRoot : Model -> List (Html Msg)
@@ -80,7 +109,29 @@ viewForRoot model =
     , h2 [] [ text ("Found " ++ String.fromInt( model.partnerData.count )) ]
     , ul [] (List.map partnerRenderer model.partnerData.partners)
     ]
-  
+
+viewShowPartner : Model -> List (Html Msg)
+viewShowPartner model =
+  case model.showPartner of
+    Empty ->
+      [ h1 [] [ text "showPartner is empty" ]
+      ]
+
+    Problem description ->
+      [ h1 [] [ text "Problem loading partner" ]
+      , p [] [ text ("Description: " ++ description) ]
+      ]
+
+    Loaded partner ->
+      [ h1 [] [ text partner.name ]
+      , p [] [ text ("Created " ++ partner.createdAt ++ " - Contact " ++ partner.contactEmail) ]
+      , p [] [ text partner.summary ]
+      , h2 [] [ text "Description" ]
+      , p [] [ text partner.description ]
+      ]
+
+
+
 viewForNotFound: Model -> List (Html Msg)
 viewForNotFound _ =
   [ h1 [] [ text "Page not found" ]
@@ -93,6 +144,7 @@ view model =
   , body =
     (case model.page of
       Root -> viewForRoot model
+      ShowPartner _ -> viewShowPartner model
       NotFound -> viewForNotFound model
     )
   }
