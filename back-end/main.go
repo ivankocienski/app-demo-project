@@ -50,7 +50,8 @@ type PartnerShortType struct {
 }
 
 type PartnerIndexPayload struct {
-	Partners []PartnerShortType `json:"partners"`
+	Partners     []PartnerShortType `json:"partners"`
+	PartnerCount int                `json:"partner_count"`
 }
 
 //
@@ -78,6 +79,7 @@ func handleStatus(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(payload)
 }
 
@@ -85,6 +87,16 @@ func handlePartnersIndex(w http.ResponseWriter, _ *http.Request) {
 	var err error
 
 	log.Println("handlePartnersIndex()")
+
+	var partnerCount int
+	err = pgConnection.
+		QueryRow(context.Background(), "select count(*) as count from partners").
+		Scan(&partnerCount)
+
+	if err != nil {
+		log.Fatal("QueryRow failed: %v\n", err)
+		return
+	}
 
 	rows, err := pgConnection.
 		Query(context.Background(), "select id, name, summary, created_at from partners order by name")
@@ -111,10 +123,12 @@ func handlePartnersIndex(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	payload := PartnerIndexPayload{
-		Partners: partners,
+		Partners:     partners,
+		PartnerCount: partnerCount,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(payload)
 }
 
@@ -142,8 +156,9 @@ func handlePartnerShow(w http.ResponseWriter, r *http.Request) {
 	if err == pgx.ErrNoRows {
 		payload := ProblemPayload{"Could not find partner with that ID"}
 
-		w.WriteHeader(404)
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.WriteHeader(404)
 		json.NewEncoder(w).Encode(payload)
 		return
 	}
@@ -163,6 +178,7 @@ func handlePartnerShow(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(payload)
 
 }
@@ -172,23 +188,23 @@ func handlePartnerShow(w http.ResponseWriter, r *http.Request) {
 //
 
 func main() {
-  var err error
-  var present bool
+	var err error
+	var present bool
 
-  log.Println("go-api-demo starting up")
+	log.Println("go-api-demo starting up")
 
 	// DB
 
-  pgConfig, present = os.LookupEnv("APP_PGCONFIG")
-  if !present {
-    log.Fatal("Fatal: APP_PGCONFIG is not set in environment, stopping")
-  }
-  // MAYBE validate it looks like a PG URL? or not? How much do i trust pgx?
+	pgConfig, present = os.LookupEnv("APP_PGCONFIG")
+	if !present {
+		log.Fatal("Fatal: APP_PGCONFIG is not set in environment, stopping")
+	}
+	// MAYBE validate it looks like a PG URL? or not? How much do i trust pgx?
 
-  pgConfig = "postgresql://" + pgConfig
-  log.Println("pgConfig=", pgConfig)
+	pgConfig = "postgresql://" + pgConfig
+	log.Println("pgConfig=", pgConfig)
 
-  pgConnection, err = pgx.Connect(context.Background(), pgConfig)
+	pgConnection, err = pgx.Connect(context.Background(), pgConfig)
 	if err != nil {
 		log.Fatal("Unable to connect to database:", err)
 	}
@@ -202,14 +218,14 @@ func main() {
 	r.HandleFunc("/api/v1/partners", handlePartnersIndex).Methods("GET")
 	r.HandleFunc("/api/v1/partners/{id}", handlePartnerShow).Methods("GET")
 
-  listenOn, present := os.LookupEnv("APP_LISTEN_ON")
-  if !present || len(listenOn) == 0 {
-    listenOn = "0.0.0.0:8002"
-  }
+	listenOn, present := os.LookupEnv("APP_LISTEN_ON")
+	if !present || len(listenOn) == 0 {
+		listenOn = "0.0.0.0:8002"
+	}
 
 	log.Printf("Starting on http://%v", listenOn)
 	err = http.ListenAndServe(listenOn, r)
-  if err != nil {
-    log.Fatal("Fatal: failed to open server:", err)
-  }
+	if err != nil {
+		log.Fatal("Fatal: failed to open server:", err)
+	}
 }
