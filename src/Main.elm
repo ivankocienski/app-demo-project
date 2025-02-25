@@ -4,8 +4,8 @@ import Api
 import Browser
 import Browser.Navigation as Nav
 import Common exposing (Model, Msg(..), Page(..), PartnerIndex, PartnerShow(..))
-import Html exposing (Html, a, div, h1, h2, li, p, text, ul)
-import Html.Attributes exposing (href)
+import Html exposing (Html, a, article, br, div, footer, h1, h2, h4, li, p, text, ul)
+import Html.Attributes exposing (class, href)
 import Url
 import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 
@@ -123,11 +123,16 @@ viewForRoot : Model -> List (Html Msg)
 viewForRoot model =
     let
         partnerRenderer partner =
-            li [] [ a [ href ("/partners/" ++ String.fromInt partner.id) ] [ text partner.name ] ]
+            article [ class "content" ]
+                [ h4 [] [ a [ href ("/partners/" ++ String.fromInt partner.id) ] [ text partner.name ] ]
+                , p [ class "subtitle" ] [ text partner.summary ]
+                , br [] []
+                ]
     in
-    [ h1 [] [ text "Partners" ]
-    , h2 [] [ text ("Found " ++ String.fromInt model.partnerData.count) ]
-    , ul [] (List.map partnerRenderer model.partnerData.partners)
+    [ h1 [ class "title" ] [ text "Partners" ]
+    , h2 [ class "subtitle" ] [ text (String.fromInt model.partnerData.count ++ " found") ]
+    , div [ class "box" ]
+        (List.map partnerRenderer model.partnerData.partners)
     ]
 
 
@@ -135,27 +140,34 @@ viewShowPartner : Model -> List (Html Msg)
 viewShowPartner model =
     case model.showPartner of
         Empty ->
-            [ h1 [] [ text "showPartner is empty" ]
+            [ h1 [ class "title" ] [ text "showPartner is empty" ]
             ]
 
         Problem description ->
-            [ h1 [] [ text "Problem loading partner" ]
-            , p [] [ text ("Description: " ++ description) ]
+            [ h1 [ class "title" ] [ text "Problem loading partner" ]
+            , p [ class "subtitle" ] [ text ("Description: " ++ description) ]
             ]
 
         Loaded partner ->
-            [ h1 [] [ text partner.name ]
-            , p [] [ text ("Created " ++ partner.createdAt ++ " - Contact " ++ partner.contactEmail) ]
-            , p [] [ text partner.summary ]
-            , h2 [] [ text "Description" ]
-            , p [] [ text partner.description ]
+            [ h1 [ class "title" ] [ text partner.name ]
+            , p [ class "subtitle" ]
+                [ text ("Created " ++ partner.createdAt ++ " - Contact ") --  ++ partner.contactEmail)
+                , a [ href ("mailto:" ++ partner.contactEmail) ] [ text partner.contactEmail ]
+                ]
+            , div [ class "content" ]
+                [ p [] [ text partner.summary ]
+                , h2 [ class "title" ] [ text "Description" ]
+                , p [] [ text partner.description ]
+                ]
             ]
 
 
 viewForNotFound : Model -> List (Html Msg)
 viewForNotFound _ =
-    [ h1 [] [ text "Page not found" ]
-    , p [] [ text "The page you were looking for does not exist" ]
+    [ div [ class "content mb-6" ]
+        [ h1 [ class "title is-1 mt-6" ] [ text "Page not found" ]
+        , h2 [ class "title is-3 mt-6" ] [ text "The page you were looking for does not exist" ]
+        ]
     ]
 
 
@@ -163,15 +175,21 @@ view : Model -> Browser.Document Msg
 view model =
     { title = titleForPage model
     , body =
-        case model.page of
-            Root ->
-                viewForRoot model
+        [ div [ class "container mt-4" ]
+            (case model.page of
+                Root ->
+                    viewForRoot model
 
-            ShowPartner _ ->
-                viewShowPartner model
+                ShowPartner _ ->
+                    viewShowPartner model
 
-            NotFound ->
-                viewForNotFound model
+                NotFound ->
+                    viewForNotFound model
+            )
+        , footer [ class "footer mt-4" ]
+            [ div [ class "container" ] [ p [ class "content" ] [ text "Copyright (c) 2025 Me, INC." ] ]
+            ]
+        ]
     }
 
 
