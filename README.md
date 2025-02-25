@@ -57,5 +57,11 @@ make
 
 ### Front end
 
-(TBD)
+```bash
+cd front-end
+npm install
+make
+
+# then open browser at `http://localhost:5000`
+```
 
