@@ -1,0 +1,9 @@
+#/bin/bash
+
+docker run \
+  -v ./data:/var/lib/postgresql/data \
+  -v ./init.d:/docker-entrypoint-initdb.d \
+  -p "5432:5432" \
+  api-demo-db
+
+

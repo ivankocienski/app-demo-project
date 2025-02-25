@@ -27,3 +27,28 @@ This repo contains a project demonstrating modern app patterns:
 - REST
 - HTML/CSS (bulma)
 
+## Local Development
+
+Documentation for working on the code on a local environment.
+
+### Database
+
+In a console tab:
+
+```bash
+cd db
+
+./build-container
+
+./run-container
+```
+
+
+### Back end
+
+(TBD)
+
+### Front end
+
+(TBD)
+
