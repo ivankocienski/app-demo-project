@@ -39,7 +39,7 @@ type alias PartnerSummary =
     { id : Int
     , name : String
     , summary : String
-    , createdAt : String -- Time.Posix
+    , createdAt : Time.Posix
     }
 
 
@@ -48,7 +48,7 @@ type alias PartnerFull =
     , name : String
     , summary : String
     , description : String
-    , createdAt : String -- Time.Posix
+    , createdAt : Time.Posix
     , contactEmail : String
     }
 

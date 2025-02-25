@@ -3,6 +3,7 @@ module Api exposing (httpErrorDescription, readPost, readPostsIndex)
 import Common exposing (Msg(..), PartnerFull, PartnerIndex, PartnerSummary)
 import Http
 import Json.Decode as JD
+import Json.Decode.Extra as JDX
 
 
 endPoint : String
@@ -33,8 +34,7 @@ partnerDecoder =
         (JD.field "name" JD.string)
         (JD.field "summary" JD.string)
         (JD.field "description" JD.string)
-        (JD.field "created_at" JD.string)
-        --JD.Extra.datetime)
+        (JD.field "created_at" JDX.datetime)
         (JD.field "contact_email" JD.string)
 
 
@@ -44,7 +44,7 @@ partnerSummaryDecoder =
         (JD.field "id" JD.int)
         (JD.field "name" JD.string)
         (JD.field "summary" JD.string)
-        (JD.field "created_at" JD.string)
+        (JD.field "created_at" JDX.datetime)
 
 
 

@@ -6,6 +6,7 @@ import Browser.Navigation as Nav
 import Common exposing (Model, Msg(..), Page(..), PartnerIndex, PartnerShow(..))
 import Html exposing (Html, a, article, br, div, footer, h1, h2, h4, li, p, text, ul)
 import Html.Attributes exposing (class, href)
+import Time exposing (Month(..))
 import Url
 import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 
@@ -136,6 +137,55 @@ viewForRoot model =
     ]
 
 
+timeToString : Time.Posix -> String
+timeToString point =
+    let
+        monthName month =
+            case month of
+                Jan ->
+                    "January"
+
+                Feb ->
+                    "Febraury"
+
+                Mar ->
+                    "March"
+
+                Apr ->
+                    "April"
+
+                May ->
+                    "May"
+
+                Jun ->
+                    "June"
+
+                Jul ->
+                    "July"
+
+                Aug ->
+                    "August"
+
+                Sep ->
+                    "September"
+
+                Oct ->
+                    "October"
+
+                Nov ->
+                    "November"
+
+                Dec ->
+                    "December"
+    in
+    -- day month, year
+    String.fromInt (Time.toDay Time.utc point)
+        ++ " "
+        ++ monthName (Time.toMonth Time.utc point)
+        ++ ", "
+        ++ String.fromInt (Time.toYear Time.utc point)
+
+
 viewShowPartner : Model -> List (Html Msg)
 viewShowPartner model =
     case model.showPartner of
@@ -151,7 +201,7 @@ viewShowPartner model =
         Loaded partner ->
             [ h1 [ class "title" ] [ text partner.name ]
             , p [ class "subtitle" ]
-                [ text ("Created " ++ partner.createdAt ++ " - Contact ") --  ++ partner.contactEmail)
+                [ text ("Created " ++ timeToString partner.createdAt ++ " - Contact ")
                 , a [ href ("mailto:" ++ partner.contactEmail) ] [ text partner.contactEmail ]
                 ]
             , div [ class "content" ]
