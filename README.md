@@ -33,7 +33,7 @@ Documentation for working on the code on a local environment.
 
 ### Database
 
-In a console tab:
+In console tab left open:
 
 ```bash
 cd db
@@ -43,10 +43,17 @@ cd db
 ./run-container
 ```
 
-
 ### Back end
 
-(TBD)
+In another console tab run:
+
+```bash
+cd back-end
+
+make
+
+. ./env-localh.sh; ./api-demo
+```
 
 ### Front end
 
