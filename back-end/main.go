@@ -195,14 +195,14 @@ func main() {
 
 	// DB
 
-	pgConfig, present = os.LookupEnv("APP_PGCONFIG")
+	pgConfig, present = os.LookupEnv("APP_BE_PGCONFIG")
 	if !present {
-		log.Fatal("Fatal: APP_PGCONFIG is not set in environment, stopping")
+		log.Fatal("Fatal: APP_BE_PGCONFIG is not set in environment, stopping")
 	}
 	// MAYBE validate it looks like a PG URL? or not? How much do i trust pgx?
 
 	pgConfig = "postgresql://" + pgConfig
-	log.Println("pgConfig=", pgConfig)
+	log.Println("pgConfig=", pgConfig) // don't do this outside of dev!
 
 	pgConnection, err = pgx.Connect(context.Background(), pgConfig)
 	if err != nil {
@@ -218,7 +218,7 @@ func main() {
 	r.HandleFunc("/api/v1/partners", handlePartnersIndex).Methods("GET")
 	r.HandleFunc("/api/v1/partners/{id}", handlePartnerShow).Methods("GET")
 
-	listenOn, present := os.LookupEnv("APP_LISTEN_ON")
+	listenOn, present := os.LookupEnv("APP_BE_LISTEN_ON")
 	if !present || len(listenOn) == 0 {
 		listenOn = "0.0.0.0:8002"
 	}

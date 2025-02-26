@@ -1,0 +1,12 @@
+#/bin/bash
+
+set -e
+
+. ../env-local.sh
+
+export PGPASSWORD=${DB_PASSWORD}
+
+psql -U ${DB_USER} \
+  -d ${DB_NAME} \
+  -h ${DB_ADDRESS} \
+  -p ${DB_PORT}

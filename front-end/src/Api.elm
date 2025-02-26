@@ -4,11 +4,7 @@ import Common exposing (Msg(..), PartnerFull, PartnerIndex, PartnerSummary)
 import Http
 import Json.Decode as JD
 import Json.Decode.Extra as JDX
-
-
-endPoint : String
-endPoint =
-    "http://localhost:8002/api/v1"
+import Config exposing (endPoint)
 
 
 readPostsIndex : Cmd Msg

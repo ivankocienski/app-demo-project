@@ -8,7 +8,8 @@
 
 const express = require('express');
 const app = express();
-const port = 5000;
+const port = process.env.APP_FE_LISTEN_PORT || 5000;
+const host = process.env.APP_FE_LISTEN_ADDRESS || '0.0.0.0';
 
 const currentDirectory = process.cwd();
 
@@ -33,8 +34,8 @@ app.get('/*', (req, res) => {
 
 wrlog("Running in " + currentDirectory);
 
-app.listen(port, () => {
-  wrlog("Listenning on localhost:" + port);
+app.listen(port, host, () => {
+  wrlog(`Listenning on http://${host}:${port}`);
 });
 
 
