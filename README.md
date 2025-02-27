@@ -24,6 +24,8 @@ This project is built on (gentoo) linux.
 
 # Local development
 
+When first pulling the repo, please remember to run `git config --local core.hooksPath .githooks/` in the project folder.
+
 Much of the development is run through helper scripts documented below. Each script needs to be run in a separate console tab at the same time.
 
 ## Configuration
