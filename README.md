@@ -1,5 +1,7 @@
 # App Demo Project
 
+![Test status](https://github.com/ivankocienski/app-demo-project/actions/workflows/run-tests.yml/badge.svg)
+
 A simple application that shows you a list of partners (companies) where you can see more info about a specific partner.
 
 Intended as a project to develop a modern app pipeline:
