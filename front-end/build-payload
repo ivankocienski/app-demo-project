@@ -4,4 +4,6 @@ set -e
 
 . ../env-local.sh
 
+export PATH=./node_modules/.bin:$PATH
+
 ./build-payload-config && elm make src/Main.elm --output=public/main.js
