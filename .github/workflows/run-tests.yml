@@ -18,5 +18,10 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Display Go version
         run: go version
-      - name: Run tests
+      - name: Run back-end tests
         run: cd back-end; go test
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Run front-end tests
+        run: '. ./env-local.sh; cd front-end; npm install && ./build-payload'
