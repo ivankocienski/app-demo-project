@@ -69,7 +69,7 @@ func handleStatus(w http.ResponseWriter, _ *http.Request) {
 		Scan(&partnerCount)
 
 	if err != nil {
-		log.Fatal("QueryRow failed: %v\n", err)
+		log.Fatal("QueryRow failed:", err)
 		return
 	}
 
@@ -94,7 +94,7 @@ func handlePartnersIndex(w http.ResponseWriter, _ *http.Request) {
 		Scan(&partnerCount)
 
 	if err != nil {
-		log.Fatal("QueryRow failed: %v\n", err)
+		log.Fatal("QueryRow failed:", err)
 		return
 	}
 

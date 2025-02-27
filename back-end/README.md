@@ -26,3 +26,6 @@ The API needs to support the following end-points:
   Shows stats about service. Only partner count.
 ```
 
+## Testing
+
+Can be run with `go test`.
