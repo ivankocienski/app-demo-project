@@ -1,10 +1,10 @@
 module Api exposing (httpErrorDescription, readPost, readPostsIndex)
 
 import Common exposing (Msg(..), PartnerFull, PartnerIndex, PartnerSummary)
+import Config exposing (endPoint)
 import Http
 import Json.Decode as JD
 import Json.Decode.Extra as JDX
-import Config exposing (endPoint)
 
 
 readPostsIndex : Cmd Msg

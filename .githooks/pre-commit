@@ -1,3 +1,10 @@
 #!/bin/sh
 
-. ./env-local.sh; cd back-end/; go test
+PROJECT_DIR=$(dirname `readlink -f $0`)/..
+# echo ${PROJECT_DIR}
+
+source ${PROJECT_DIR}/env-local.sh; 
+
+cd ${PROJECT_DIR}/back-end/; go test
+
+cd ${PROJECT_DIR}/front-end/; elm-format src/ --validate
